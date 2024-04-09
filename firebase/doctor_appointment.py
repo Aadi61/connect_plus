@@ -11,7 +11,8 @@ def add_doctor_detail(name, venue, type, slots):
         "name": name,
         "venue": venue,
         "type": type,
-        "slots": slots
+        "slots": slots,
+        "image_url":"https://www.shutterstock.com/image-photo/healthcare-medical-staff-concept-portrait-600nw-2281024823.jpg"
     })
     doctor_id = doctor_ref.id
     doctor_ref.update({"doctor_id": doctor_id})
@@ -84,3 +85,4 @@ def getHistory(user_id):
     history = db.collection(user_collection).document(user_id).get().to_dict().get("appointment_history")
     return history
 
+add_doctor_detail("ABC", "AB1", "General", )

@@ -1,4 +1,5 @@
 from api import app
+from connect_plus.firebase.lost_and_found import save_image_to_firebase
 from firebase.doctor_appointment import add_doctor_detail, add_user_detail, get_all_doctor_details, retreiveTimeList
 
 from flask import jsonify, request
@@ -17,6 +18,7 @@ def add_doctor():
     venue = request.form['venue']
     type = request.form['type']
     slots = request.form['slots']
+
     add_doctor_detail(name, venue, type, slots)
     return jsonify({'message': 'Item added successfully'})  
 
