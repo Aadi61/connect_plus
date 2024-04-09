@@ -1,4 +1,4 @@
-from . import db
+from . import db, bucket
 
 found_collection = "found"
 
@@ -49,3 +49,9 @@ def retreive_all_found_items():
     return found_items_list
 
 
+def save_image_to_firebase(filename):
+    blob = bucket.blob(filename)
+    blob.upload_from_filename(filename)
+    blob.make_public()
+    return blob.public_url
+    
