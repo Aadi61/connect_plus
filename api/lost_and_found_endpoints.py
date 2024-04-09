@@ -40,11 +40,22 @@ def retreive_item_user():
 @app.route('/delete_found_item', methods=['POST'])
 def delete_found():
     req_data = request.get_json()
+    print(req_data)
     found_id = req_data['found_id']
-    delete_item(found_id)
+    delete_found_item(found_id)
+    print('inside')
+    print(found_id)
     return jsonify({'message': 'Item deleted successfully'})
 
-
+@app.route('/delete_lost_item', methods=['POST'])
+def delete_lost():
+    req_data = request.get_json()
+    print(req_data)
+    lost_id = req_data['found_id']
+    delete_found_item(lost_id)
+    print('inside')
+    print(lost_id)
+    return jsonify({'message': 'Item deleted successfully'})
 
 
 # Add a lost item
@@ -63,9 +74,9 @@ def add_lost():
 
 
 # Retrieve all lost items
-@app.route('/retrieve_all_lost_items', methods=['GET'])
+@app.route('/retreive_all_lost_items', methods=['GET'])
 def retrieve_all_lost():
-    lost_items_list = retrieve_all_lost_items()
+    lost_items_list = retreive_all_lost_items()
     return jsonify(lost_items_list)
 
 
@@ -75,7 +86,7 @@ def retrieve_all_lost():
 @app.route('/retrieve_lost_items_user', methods=['POST'])
 def retrieve_lost_user():
     user_id = request.get_json()['user_id']
-    lost_items_list = retrieve_all_lost_items(user_id)
+    lost_items_list = retrieve_lost_item(user_id)
     return jsonify(lost_items_list)
 
 

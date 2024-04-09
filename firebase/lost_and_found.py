@@ -2,7 +2,7 @@ from . import db, bucket
 
 found_collection = "found"
 
-
+lost_collection = "lost"
 
 # Add a found itm to the database
 def add_found_item(name, image_url, place,contact,user_id):
@@ -54,8 +54,9 @@ def save_image_to_firebase(filename):
 
 
 # Delete a specific item using found_id
-def delete_item(found_id):
+def delete_found_item(found_id):
     found_ref = db.collection(found_collection).document(found_id)
+    print(found_ref)
     found_ref.delete()
     
     
@@ -85,7 +86,7 @@ def add_lost_item(name, image_url, place, contact, user_id, date_lost):
     
     
 # Retrieve all lost items
-def retrieve_all_lost_items():
+def retreive_all_lost_items():
     lost_ref = db.collection(lost_collection)
     lost_items = lost_ref.get()
     print("lost items: ", lost_items)
@@ -116,6 +117,5 @@ def mark_item_as_returned2(found_id):
     found_ref = db.collection(found_collection).document(found_id)
     found_ref.update({"returned": True})
     return True
-
 
 
