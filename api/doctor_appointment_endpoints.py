@@ -1,6 +1,6 @@
 from api import app
-from connect_plus.firebase.lost_and_found import save_image_to_firebase
-from firebase.doctor_appointment import add_doctor_detail, add_user_detail, get_all_doctor_details, retreiveTimeList
+from firebase.lost_and_found import save_image_to_firebase
+from firebase.doctor_appointment import add_doctor_detail, add_user_detail, get_all_doctor_details, retreiveTimeList, book, getAppointmentDetails, getHistory
 
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 # Retreive all doctor details
 @app.route('/retreive_all_doctor_details', methods=['GET'])
 def retreive_items():
+    print('hahaha')
     doctor_details = get_all_doctor_details()
     return jsonify(doctor_details)
 
@@ -28,23 +29,25 @@ def retreive_time_list():
     doctor_id = request.get_json()['doctor_id']
     date = request.get_json()['date']
     timingsList = retreiveTimeList(doctor_id, date)
+    print(timingsList)
     return jsonify(timingsList)
 
 # Retreive all doctor details
-@app.route('/retreive_all_doctor_details', methods=['GET'])
-def retreive_items():
-    doctor_details = get_all_doctor_details()
-    return jsonify(doctor_details)
+# @app.route('/retreive_all_doctor_details', methods=['GET'])
+# def retreive_items():
+#     doctor_details = get_all_doctor_details()
+#     return jsonify(doctor_details)
 
 # Book an appointment
 @app.route('/book', methods=['POST'])
-def book():
+def book_appointment():
     date = request.get_json()['date']
     time = request.get_json()['time']
     doctor_id = request.get_json()['doctor_id']
     user_id = request.get_json()['user_id']
     book(date, time, doctor_id, user_id)
     return jsonify({'message': 'Appointment booked successfully'})
+
 
 # Add user details
 @app.route('/add_user_detail', methods=['POST'])
@@ -55,4 +58,19 @@ def add_user():
     appointment_history = request.form['appointment_history']
     add_user_detail(name, email, password, appointment_history)
     return jsonify({'message': 'User added successfully'})
+
+
+
+@app.route('/get_appointment_history', methods=['POST'])
+def get_appointment_history():
+    print('heyyy')
+    user_id = request.get_json()['user_id']
+    print(request.get_json())
+    appointment_history_list = getHistory(user_id)
+    appointment_details = []
+    print(appointment_history_list)
+    # for appointment in appointment_history_list:
+    #     appointment_ = getAppointmentDetails(appointment['appointment_id'])
+    #     appointment_details.append(appointment_)
+    return jsonify(appointment_history_list)
 

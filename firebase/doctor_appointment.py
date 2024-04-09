@@ -33,7 +33,7 @@ def add_user_detail(name, email, password, appointment_history):
 
 # Retrieve doctor details of a particular doctor at a particular date
 def retreiveTimeList(doctor_id, date):
-    timingsInt = db.collection(doctor_collection).document(doctor_id).get().to_dict().get("slots")[date-1]
+    timingsInt = db.collection(doctor_collection).document(doctor_id).get().to_dict().get("slots")[int(date)-1]
     timingsList = []
     for i in range(0, 24):
         j = str(i)
@@ -50,8 +50,11 @@ def get_all_doctor_details():
         doctor_details.append({
             "name": doctor_data["name"],
             "venue": doctor_data["venue"],
-            "type": doctor_data["type"]
+            "type": doctor_data["type"],
+            "image_url": doctor_data["image_url"],
+            "doctor_id": doctor_data["doctor_id"]
         })
+    print(doctor_details)
     return doctor_details
 
 # Book function
@@ -79,10 +82,29 @@ def book(date, time, doctor_id, user_id):
     else:
         return 0
 
+def getAppointmentDetails(appointment_id):
+    user_id = db.collection(appointment_collection).document(appointment_id).get().to_dict().get("user_id")
+    user_name = db.collection(user_collection).document(user_id).get().to_dict().get("name")
+
+    doctor_id = db.collection(appointment_collection).document(appointment_id).get().to_dict().get("doctor_id")
+    doctor_name = db.collection(doctor_collection).document(doctor_id).get().to_dict().get("name")
+
+    date = db.collection(appointment_collection).document(appointment_id).get().to_dict().get("date")
+    time = db.collection(appointment_collection).document(appointment_id).get().to_dict().get("time")
+
+    details = {
+        "user_name":user_name,
+        "doctor_name":doctor_name,
+        "date":date,
+        "time":time
+    }
+    return details
+
 
 #history function
 def getHistory(user_id):
     history = db.collection(user_collection).document(user_id).get().to_dict().get("appointment_history")
-    return history
-
-add_doctor_detail("ABC", "AB1", "General", )
+    details_list = []
+    for appointment_id in history:
+        details_list.append(getAppointmentDetails(appointment_id))
+    return details_list

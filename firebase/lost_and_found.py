@@ -46,12 +46,11 @@ def retreive_all_found_items():
     return found_items_list
 
 
-def save_image_to_firebase(filename):
+def save_image_to_firebase(image, filename):
     blob = bucket.blob(filename)
-    blob.upload_from_filename(filename)
+    blob.upload_from_file(image)
     blob.make_public()
     return blob.public_url
-
 
 # Delete a specific item using found_id
 def delete_found_item(found_id):
