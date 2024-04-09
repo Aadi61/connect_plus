@@ -21,11 +21,7 @@ def add_item():
     contact = request.form['contact']
     user_id = request.form['user_id']
 
-    image = request.files['image']
-    filename = secure_filename(image.filename)
-    image.save(filename)
-    image_url = save_image_to_firebase(filename)
-    add_found_item(name, image_url, place, contact, user_id)  
+    add_found_item(name, place, contact, user_id)  
     return jsonify({'message': 'Item added successfully'})  
     
 # Retreive all found items of a user
