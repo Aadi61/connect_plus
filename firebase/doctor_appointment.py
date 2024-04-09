@@ -1,4 +1,4 @@
-from __init__ import db
+from . import db
 
 doctor_collection = "doctor"
 appointment_collection = "appointment"
