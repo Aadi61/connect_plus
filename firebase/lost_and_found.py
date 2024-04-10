@@ -5,7 +5,7 @@ found_collection = "found"
 lost_collection = "lost"
 
 # Add a found itm to the database
-def add_found_item(name, image_url, place,contact,user_id):
+def add_found_item(name, image_url, place,contact,user_id,date):
     found_ref = db.collection(found_collection).document()
     
     found_ref.set({
@@ -14,6 +14,7 @@ def add_found_item(name, image_url, place,contact,user_id):
         "place":place,
         "contact":contact,
         "user_id":user_id,
+        "date_found":date
     })
     found_id= found_ref.id
 

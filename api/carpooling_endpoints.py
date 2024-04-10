@@ -1,5 +1,5 @@
 from api import app
-from connect_plus.firebase.carpooling import add_carpool_details, retrieveList
+from firebase.carpooling import add_carpool_details, retrieveList
 from firebase.lost_and_found import *
 
 from flask import jsonify, request
@@ -19,6 +19,7 @@ def add_carpooling_details_route():
 # Retrieve carpooling details
 @app.route('/retrieve_carpooling_details', methods=['POST'])
 def retrieve_carpooling_details_route():
+    print(request.get_json())
     time_slot = request.get_json()['time_slot']
     destination = request.get_json()['destination']
 

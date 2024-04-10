@@ -16,15 +16,16 @@ def retreive_found_items():
 # Add a found item
 @app.route('/add_found_item', methods=['POST'])
 def add_item():
+    print(request.form)
     name = request.form['name']
     place = request.form['place']
     contact = request.form['contact']
     user_id = request.form['user_id']
-
+    date=request.form['date_found']
     image = request.files['image']
     filename = secure_filename(image.filename)
     image_url = save_image_to_firebase(image, filename)
-    add_found_item(name, image_url, place, contact, user_id)  
+    add_found_item(name, image_url, place, contact, user_id,date)  
     return jsonify({'message': 'Item added successfully'})  
 
 # Retreive all found items of a user
