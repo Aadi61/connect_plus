@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: campus-ingress
+spec:
+  rules:
+    - host: vit-connectplus
+      http:
+        paths:
+          - path: /carpool
+            pathType: Prefix
+            backend:
+              service:
+                name: carpooling-service
+                port:
+                  number: 80
+          - path: /hostel
+            pathType: Prefix
+            backend:
+              service:
+                name: roommate-finder-service
+                port:
+                  number: 80
+          - path: /lostfound
+            pathType: Prefix
+            backend:
+              service:
+                name: lost-and-found-service
+                port:
+                  number: 80
+          - path: /appointment
+            pathType: Prefix
+            backend:
+              service:
+                name: doctor-appointment-service
+                port:
+                  number: 80

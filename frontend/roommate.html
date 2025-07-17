@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Roommate Finder – Connect Plus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 font-inter min-h-screen p-8">
+
+  <h1 class="text-3xl font-bold text-center text-blue-700 mb-10">Roommate Finder – Connect Plus</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <!-- Add Roomie Form -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Add Your Room Preferences</h2>
+      <form id="addRoomieForm" class="space-y-4">
+        <select id="room_type" required class="w-full border p-2 rounded-xl">
+          <option value="">Select Room Type (AC/NAC)</option>
+          <option value="AC">AC</option>
+          <option value="NAC">NAC</option>
+        </select>
+
+        <select id="bed_type" required class="w-full border p-2 rounded-xl">
+          <option value="">Select Bed Type</option>
+          <option value="2 Bed">2 Bed</option>
+          <option value="3 Bed">3 Bed</option>
+          <option value="4 Bed">4 Bed</option>
+        </select>
+
+        <input id="block_name" type="text" required placeholder="Block Name (e.g., A, B, C)" class="w-full border p-2 rounded-xl" />
+        <input id="user_id" type="text" required placeholder="Your User ID" class="w-full border p-2 rounded-xl" />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-xl w-full hover:bg-blue-700 transition">
+          Submit
+        </button>
+      </form>
+      <p id="addStatus" class="mt-3 text-green-600 hidden"></p>
+    </div>
+
+    <!-- Retrieve Roomies -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Find Compatible Roommates</h2>
+      <form id="retrieveForm" class="space-y-4">
+        <select id="r_room_type" required class="w-full border p-2 rounded-xl">
+          <option value="">Select Room Type (AC/NAC)</option>
+          <option value="AC">AC</option>
+          <option value="NAC">NAC</option>
+        </select>
+
+        <select id="r_bed_type" required class="w-full border p-2 rounded-xl">
+          <option value="">Select Bed Type</option>
+          <option value="2 Bed">2 Bed</option>
+          <option value="3 Bed">3 Bed</option>
+          <option value="4 Bed">4 Bed</option>
+        </select>
+
+        <input id="r_block_name" type="text" required placeholder="Block Name (e.g., A, B, C)" class="w-full border p-2 rounded-xl" />
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-xl w-full hover:bg-green-700 transition">
+          Find Roommates
+        </button>
+      </form>
+
+      <div id="roomiesList" class="mt-6 space-y-3 hidden">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Matching Roommates:</h3>
+        <div id="roomiesContainer" class="space-y-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "http://vit-connectplus/hostel";
+
+    // Add Roomie
+    document.getElementById('addRoomieForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const room_type = document.getElementById('room_type').value;
+      const bed_type = document.getElementById('bed_type').value;
+      const block_name = document.getElementById('block_name').value;
+      const user_id = document.getElementById('user_id').value;
+
+      const formData = new FormData();
+      formData.append('room_type', room_type);
+      formData.append('bed_type', bed_type);
+      formData.append('block_name', block_name);
+      formData.append('user_id', user_id);
+
+      const res = await fetch(`${BASE_URL}/add_rommie_details`, {
+        method: 'POST',
+        body: formData
+      });
+      const result = await res.json();
+
+      document.getElementById('addStatus').innerText = result.message || 'Submitted!';
+      document.getElementById('addStatus').classList.remove('hidden');
+    });
+
+    // Retrieve Roomies
+    document.getElementById('retrieveForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const room_type = document.getElementById('r_room_type').value;
+      const bed_type = document.getElementById('r_bed_type').value;
+      const block_name = document.getElementById('r_block_name').value;
+
+      const res = await fetch(`${BASE_URL}/retrieve_name_of_all_roomies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_type, bed_type, block_name })
+      });
+      const roomies = await res.json();
+
+      const roomiesContainer = document.getElementById('roomiesContainer');
+      roomiesContainer.innerHTML = '';
+      document.getElementById('roomiesList').classList.remove('hidden');
+
+      if (roomies.length === 0) {
+        roomiesContainer.innerHTML = '<p class="text-gray-500">No roommates found matching your criteria.</p>';
+        return;
+      }
+
+      roomies.forEach(roomie => {
+        const card = document.createElement('div');
+        card.className = "border rounded-xl p-4 shadow bg-gray-50";
+        card.innerHTML = `
+          <p><strong>User ID:</strong> ${roomie.user_id}</p>
+          <p><strong>Room Type:</strong> ${roomie.room_type}</p>
+          <p><strong>Bed Type:</strong> ${roomie.bed_type}</p>
+          <p><strong>Block:</strong> ${roomie.block_name}</p>
+        `;
+        roomiesContainer.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

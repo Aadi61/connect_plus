@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lost-and-found-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lost-and-found
+  template:
+    metadata:
+      labels:
+        app: lost-and-found
+    spec:
+      containers:
+        - name: lost-and-found
+          image: aadi6161/lost-and-found-service:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/campus_app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lost-and-found-service
+spec:
+  selector:
+    app: lost-and-found
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP

@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carpooling - Connect Plus</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      padding: 40px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    form, .results {
+      max-width: 500px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .card {
+      background: #f7f9fb;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Carpooling Service</h2>
+
+<form id="carpoolForm">
+  <input type="text" placeholder="User ID" name="user_id" required />
+  <input type="text" placeholder="Source" name="source" required />
+  <input type="text" placeholder="Destination" name="destination" required />
+  <input type="date" name="date" required />
+  <input type="text" placeholder="Time (e.g., 1530)" name="time" required />
+  <button type="submit">Add Ride</button>
+</form>
+
+<form id="retrieveForm">
+  <input type="text" placeholder="Destination to Search" name="destination" required />
+  <input type="text" placeholder="Time Slot (e.g., 1516 for 15:00–16:00)" name="time_slot" required />
+  <button type="submit">Find Rides</button>
+</form>
+
+<div class="results" id="results"></div>
+
+<script>
+  const BASE_URL = "http://vit-connectplus/carpool";
+
+  document.getElementById("carpoolForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const form = new FormData(this);
+    const payload = Object.fromEntries(form.entries());
+
+    const res = await fetch(`${BASE_URL}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    alert("Carpool Added! ID: " + data.carpool_id);
+    this.reset();
+  });
+
+  document.getElementById("retrieveForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const form = new FormData(this);
+    const payload = Object.fromEntries(form.entries());
+
+    const res = await fetch(`${BASE_URL}/retrieve`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const rides = await res.json();
+    const results = document.getElementById("results");
+    results.innerHTML = rides.map(ride => `
+      <div class="card">
+        <strong>${ride.source} ➝ ${ride.destination}</strong><br>
+        Date: ${ride.date}<br>
+        Time: ${ride.time}<br>
+        User: ${ride.user_id}
+      </div>
+    `).join('');
+  });
+</script>
+
+</body>
+</html>

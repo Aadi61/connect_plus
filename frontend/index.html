@@ -1,0 +1,84 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect Plus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #f9f9f9;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .card-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    .card {
+      background: white;
+      width: 240px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card img {
+      width: 60px;
+      margin-bottom: 15px;
+    }
+    .card h3 {
+      margin-bottom: 10px;
+      color: #444;
+    }
+    .card p {
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to Connect Plus</h1>
+  <div class="card-container">
+    <div class="card" onclick="window.location.href='carpool.html'">
+      <img src="https://cdn-icons-png.flaticon.com/512/1738/1738691.png" alt="Carpool">
+      <h3>Carpooling</h3>
+      <p>Find and offer rides across campus.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2920/2920105.png" alt="Doctor">
+      <h3>Doctor Appointment</h3>
+      <p>Book appointments with campus doctors.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3187/3187880.png" alt="Lost and Found">
+      <h3>Lost & Found</h3>
+      <p>Report or find lost items on campus.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/709/709592.png" alt="Roommate">
+      <h3>Roommate Finder</h3>
+      <p>Find compatible roommates and rooms.</p>
+    </div>
+  </div>
+
+</body>
+</html>
