@@ -1,0 +1,3 @@
+[submodule "frontend/mobile"]
+	path = frontend/mobile
+	url = https://github.com/ninu-nior/VIT-Connect-.git
