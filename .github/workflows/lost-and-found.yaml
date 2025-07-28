@@ -6,20 +6,47 @@ on:
       - 'lost-and-found-service/**'
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/lost-and-found-service:latest ./lost-and-found-service
+    - name: Build Docker Image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/lost-and-found-service:latest ./lost-and-found-service
 
-      - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/lost-and-found-service:latest
+    - name: Push Docker Image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/lost-and-found-service:latest
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --region ap-south-1 --name connectplus-cluster
+
+    - name: Inject AWS credentials as Kubernetes Secret
+      run: |
+        kubectl create secret generic aws-credentials \
+          --from-literal=AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+          --from-literal=AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+          --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f ./k8s/lost-and-found-deployment.yaml

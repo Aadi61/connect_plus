@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lost & Found Portal</title>
+  <style>
+    :root {
+      --primary: #2f80ed;
+      --bg: #ffffff;
+      --card-bg: #f9f9f9;
+      --border: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .column {
+      flex: 1;
+      min-width: 320px;
+      max-width: 500px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .column h2 {
+      margin: 0;
+    }
+
+    .toggle-form-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+
+    .form-container {
+      display: none;
+      margin-top: 15px;
+    }
+
+    form input, form button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    form button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .item-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: white;
+      margin-top: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .item-card img {
+      max-width: 100%;
+      max-height: 160px;
+      object-fit: cover;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+
+    .item-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .item-info {
+      font-size: 14px;
+      margin: 2px 0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<a href="index.html" style="
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+">&larr; Back to Home</a>
+
+  <h1>Lost and Found Dashboard</h1>
+
+  <div class="container">
+    <!-- Found Items Column -->
+    <div class="column">
+      <div class="column-header">
+        <h2>Found Items</h2>
+        <button class="toggle-form-btn" onclick="toggleForm('found')">+</button>
+      </div>
+
+      <div id="foundForm" class="form-container">
+        <form id="addFoundForm" enctype="multipart/form-data">
+          <input name="name" placeholder="Item Name" required>
+          <input name="place" placeholder="Place Found" required>
+          <input name="contact" placeholder="Contact Info" required>
+          <input name="user_id" placeholder="User ID" required>
+          <input name="date_found" type="date" required>
+          <input name="image" type="file" required>
+          <button type="submit">Submit Found Item</button>
+        </form>
+      </div>
+
+      <div id="foundItems"></div>
+    </div>
+
+    <!-- Lost Items Column -->
+    <div class="column">
+      <div class="column-header">
+        <h2>Lost Items</h2>
+        <button class="toggle-form-btn" onclick="toggleForm('lost')">+</button>
+      </div>
+
+      <div id="lostForm" class="form-container">
+        <form id="addLostForm">
+          <input name="name" placeholder="Item Name" required>
+          <input name="place" placeholder="Place Lost" required>
+          <input name="contact" placeholder="Contact Info" required>
+          <input name="user_id" placeholder="User ID" required>
+          <input name="date_lost" type="date" required>
+          <input name="image" type="file" required>
+          <button type="submit">Submit Lost Item</button>
+        </form>
+      </div>
+
+      <div id="lostItems"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://vit-connectplus/lostfound';
+
+    function toggleForm(type) {
+      const thisForm = document.getElementById(type + 'Form');
+      const otherForm = document.getElementById(type === 'found' ? 'lostForm' : 'foundForm');
+      thisForm.style.display = thisForm.style.display === 'block' ? 'none' : 'block';
+      otherForm.style.display = 'none';
+    }
+
+    document.getElementById('addFoundForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      await fetch(`${API}/add_found_item`, {
+        method: 'POST',
+        body: formData
+      });
+      e.target.reset();
+      document.getElementById('foundForm').style.display = 'none';
+      loadFoundItems();
+    });
+
+    document.getElementById('addLostForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  await fetch(`${API}/add_lost_item`, {
+    method: 'POST',
+    body: formData
+  });
+  e.target.reset();
+  document.getElementById('lostForm').style.display = 'none';
+  loadLostItems();
+});
+
+
+    async function loadFoundItems() {
+      const res = await fetch(`${API}/retreive_all_found_items`);
+      const data = await res.json();
+      const container = document.getElementById('foundItems');
+      container.innerHTML = data.map(item => `
+        <div class="item-card">
+          <div class="item-title">${item.name}</div>
+          <div class="item-info">Place: ${item.place}</div>
+          <div class="item-info">Contact: ${item.contact}</div>
+          <img src="${item.image_url}" alt="${item.name}">
+        </div>
+      `).join('');
+    }
+
+    async function loadLostItems() {
+      const res = await fetch(`${API}/retreive_all_lost_items`);
+      const data = await res.json();
+      const container = document.getElementById('lostItems');
+      container.innerHTML = data.map(item => `
+        <div class="item-card">
+          <div class="item-title">${item.name}</div>
+          <div class="item-info">Place: ${item.place}</div>
+          <div class="item-info">Contact: ${item.contact}</div>
+          <img src="${item.image_url}" alt="${item.name}">
+        </div>
+      `).join('');
+    }
+
+    // Initial load
+    loadFoundItems();
+    loadLostItems();
+  </script>
+</body>
+</html>

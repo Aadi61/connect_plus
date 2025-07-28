@@ -1,3 +1,6 @@
+import boto3
+from botocore.exceptions import NoCredentialsError
+from werkzeug.utils import secure_filename
 import os
 import uuid
 from db import db
@@ -8,13 +11,23 @@ lost_col = db["lost"]
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+S3_BUCKET = 'vit--connectplus'
+S3_REGION = 'ap-south-1'
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY')
+AWS_SECRET_KEY = os.environ.get('AWS_SECRET_KEY')
 
-def save_image_locally(image_file):
-    ext = image_file.filename.rsplit('.', 1)[-1]
-    filename = f"{uuid.uuid4()}.{ext}"
-    path = os.path.join(UPLOAD_FOLDER, filename)
-    image_file.save(path)
-    return f"/uploads/{filename}"  # URL path for Flask to serve
+def upload_to_s3(file):
+    filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
+    s3 = boto3.client('s3',
+                      region_name=S3_REGION,
+                      aws_access_key_id=AWS_ACCESS_KEY,
+                      aws_secret_access_key=AWS_SECRET_KEY)
+    try:
+        s3.upload_fileobj(file, S3_BUCKET, filename, ExtraArgs={'ACL': 'public-read'})
+        url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{filename}"
+        return url
+    except NoCredentialsError:
+        return None
 
 
 def add_found_item(name, image_url, place, contact, user_id, date_found):

@@ -20,6 +20,16 @@ spec:
           env:
             - name: MONGO_URI
               value: mongodb://mongo:27017/campus_app
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_SECRET_KEY
 ---
 apiVersion: v1
 kind: Service
